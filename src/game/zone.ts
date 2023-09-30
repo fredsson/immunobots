@@ -112,8 +112,6 @@ export class Zone {
             tiles.push(new ZoneTile(tileType));
           });
 
-          console.log(tiles);
-
           resolve(new Zone(startPosition, tiles));
         })
     });
