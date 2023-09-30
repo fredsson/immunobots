@@ -15,5 +15,9 @@ window.addEventListener('DOMContentLoaded', () => {
   const game = new Game();
   const renderer = new Renderer(app, game.playerPositionChanged, game.zoneLoaded);
 
+  const enemyCreatedSub = game.enemyCreated.subscribe(enemy => {
+    renderer.enemyCreated(enemy.id, enemy.positionChanged);
+  });
+
   app.ticker.add((dt) => game.update(dt));
 })

@@ -70,7 +70,7 @@ export class ZoneView implements GameView {
     return view;
   }
 
-  constructor(private stage: Container<DisplayObject>, private camera: Camera, private zone: Zone) {
+  private constructor(private stage: Container<DisplayObject>, private camera: Camera, private zone: Zone) {
   }
 
   public init(): void {

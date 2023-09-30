@@ -14,7 +14,7 @@ export class PlayerView implements GameView {
 
   private sprite?: Sprite;
 
-  constructor(private stage: Container<DisplayObject>, private camera: Camera, private playerPositionChanged: Observable<Vec2>) {
+  private constructor(private stage: Container<DisplayObject>, private camera: Camera, private playerPositionChanged: Observable<Vec2>) {
   }
 
   public init(): void {
