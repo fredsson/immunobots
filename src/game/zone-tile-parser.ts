@@ -1,7 +1,7 @@
 import { Vec2 } from "../utils/vec";
 import { TileType } from "./zone";
 
-const OpenTileTokens = ['T', 'S'];
+const OpenTileTokens = ['T', 'S', 'E'];
 
 const getIndexFromCoordinates = (position: Vec2, delta: Vec2, width: number, height: number) => {
   const x = position.x + delta.x;
@@ -29,6 +29,7 @@ const getNeighborToken = (tokens: string[], indexCallback: () => number | undefi
 
 export class ZoneTileParser  {
   public static StartTileToken = 'S';
+  public static EnemyStartTileToken = 'E';
 
   constructor(private tokens: string[], private width: number, private height: number) {
   }

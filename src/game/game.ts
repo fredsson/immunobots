@@ -24,7 +24,7 @@ export class Game {
       this.player.init(this.zone.playerStartPosition);
       this.eventPublisher.emit('zoneLoaded', this.zone);
 
-      const enemy = new Bacteria(1, {...this.zone.playerStartPosition});
+      const enemy = new Bacteria(1, {...this.zone.randomEnemyStartPosition()});
       this.enemies.push(enemy);
       this.eventPublisher.emit('enemyCreated', enemy);
     });

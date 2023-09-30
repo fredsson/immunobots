@@ -35,6 +35,8 @@ export class Zone {
           const tokens = data.split('');
           const tileParser = new ZoneTileParser(tokens, 100, 100);
 
+          const enemyStartPositions: Vec2[] = [];
+
           tokens.forEach((v, index) => {
             const x = index % 100;
             const y = Math.floor(index / 100);
@@ -46,19 +48,36 @@ export class Zone {
               }
             }
 
+            if (v === ZoneTileParser.EnemyStartTileToken) {
+              enemyStartPositions.push({
+                x: (x * 128) + (128 / 2),
+                y: (y * 128) + (128 / 2)
+              })
+            }
+
             const tileType = tileParser.tokenBasedOnNeighbors(v, {x, y});
             tiles.push(new ZoneTile(tileType));
           });
 
-          resolve(new Zone(startPosition, tiles));
+          resolve(new Zone(startPosition, enemyStartPositions, tiles));
         })
     });
   }
 
-  constructor(public readonly playerStartPosition: Vec2, public readonly tiles: ZoneTile[]) {
+  constructor(
+    public readonly playerStartPosition: Vec2,
+    private enemyStartPositions: Vec2[],
+    public readonly tiles: ZoneTile[],
+  ) {
   }
 
   public destroy(): void {
+  }
+
+  public randomEnemyStartPosition() {
+    const index = Math.round(Math.random() * this.enemyStartPositions.length - 1);
+
+    return this.enemyStartPositions[index];
   }
 
 }
