@@ -1,0 +1,16 @@
+{
+  "name": "immunobots",
+  "version": "0.0.0",
+  "description": "A Ludum Dare 54 Game",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fredrik Andersson",
+  "license": "GPL-2.0-only",
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  }
+}
