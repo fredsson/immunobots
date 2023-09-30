@@ -13,4 +13,6 @@ window.addEventListener('DOMContentLoaded', () => {
   container.appendChild(app.view as any);
   const game = new Game();
   const renderer = new Renderer(app, game.playerPositionChanged);
+
+  app.ticker.add((dt) => game.update(dt));
 })

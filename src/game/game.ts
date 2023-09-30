@@ -9,4 +9,13 @@ export class Game {
 
   constructor() {
   }
+
+  public destroy() {
+    this.player.destroy();
+  }
+
+  public update(dt: number) {
+    this.player.update(dt);
+  }
+
 }
