@@ -18,14 +18,12 @@ export class PlayerView implements GameView {
   }
 
   public init(): void {
-    // load asset
-    // add asset to stage
-    // setup event listeners
-
     Assets.load('assets/gfx/bot.png').then(b => {
       this.sprite = new Sprite(b);
+      this.sprite.zIndex = 2;
+      this.sprite.anchor.x = 0.5;
+      this.sprite.anchor.y = 0.5;
       this.stage.addChild(this.sprite);
-
       this.playerPositionChanged.subscribe(position => {
         if (this.sprite) {
           const screenSpace = this.camera.toScreenSpace(position);

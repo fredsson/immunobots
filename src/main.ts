@@ -11,8 +11,9 @@ window.addEventListener('DOMContentLoaded', () => {
   }
   const app = new Application({ backgroundColor: '#1099bb', resizeTo: container});
   container.appendChild(app.view as any);
+
   const game = new Game();
-  const renderer = new Renderer(app, game.playerPositionChanged);
+  const renderer = new Renderer(app, game.playerPositionChanged, game.zoneLoaded);
 
   app.ticker.add((dt) => game.update(dt));
 })

@@ -12,7 +12,7 @@ const MovementByKey: Record<string, Vec2> = {
 
 export class Player {
   private eventPublisher: EventPublisher = new EventPublisher();
-  private currentPosition: Vec2 = {x: 500, y: 500};
+  private currentPosition: Vec2 = {x: 800, y: 800};
 
   private abortController = new AbortController();
 
@@ -36,13 +36,18 @@ export class Player {
     }, {signal: this.abortController.signal});
   }
 
+  public init(startPosition: Vec2) {
+    this.currentPosition = startPosition;
+
+    this.eventPublisher.emit('positionChanged', this.currentPosition);
+  }
+
   public update(dt: number): void {
     const {x: dx, y: dy} = this.calculateMovement();
-
-    if (dx !== 0 && dy !== 0) {
+    if (dx !== 0 || dy !== 0) {
       this.currentPosition = {
-        x: PlayerSpeed * dx * dt,
-        y: PlayerSpeed * dy * dt,
+        x: Math.round(this.currentPosition.x + PlayerSpeed * dx * dt),
+        y: Math.round(this.currentPosition.y + PlayerSpeed * dy * dt),
       };
       this.eventPublisher.emit('positionChanged', this.currentPosition);
     }

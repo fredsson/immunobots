@@ -1,11 +1,12 @@
 import { Rectangle } from "pixi.js";
-import { Observable, Subscription } from "../utils/event-publisher";
+import { EventPublisher, Observable, Subscription } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
 
 
 
 export interface Camera {
   toScreenSpace(position: Vec2): Vec2;
+  positionChanged: Observable<Vec2>;
 }
 
 export class CenteredCamera implements Camera {
@@ -16,6 +17,10 @@ export class CenteredCamera implements Camera {
   private screenCenter: Vec2;
   private positionSubscription: Subscription;
 
+  private eventPublisher: EventPublisher = new EventPublisher();
+
+  public positionChanged = this.eventPublisher.define<Vec2>('positionChanged');
+
   constructor(screen: Rectangle, target: Observable<Vec2>) {
     this.screenCenter = {
       x: screen.width / 2,
@@ -24,6 +29,7 @@ export class CenteredCamera implements Camera {
 
     this.positionSubscription = target.subscribe((position) => {
       this.offset = Vec2.sub(position, this.screenCenter);
+      this.eventPublisher.emit('positionChanged', undefined);
     });
   }
 
