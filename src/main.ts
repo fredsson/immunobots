@@ -3,6 +3,8 @@ import { Game } from "./game/game";
 import { Renderer } from "./gfx/renderer";
 import { StartMenu } from "./game/start-menu";
 import { AudioService } from "./sfx/audio-service";
+import { EndMenu } from "./game/end-menu";
+import { Subscription } from "./utils/event-publisher";
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -28,23 +30,52 @@ window.addEventListener('DOMContentLoaded', () => {
     game.healthChanged
   );
 
-  const startMenu = new StartMenu();
+  let startMenu = new StartMenu();
   renderer.showStartMenu();
 
-  startMenu.anyButtonClicked.subscribe(() => {
+  let subscriptions: Subscription[] = [];
+
+  const runGame = () => {
     startMenu.destroy();
     game.init();
     renderer.init();
 
     audioService.startBackground();
 
-    const enemyCreatedSub = game.enemyCreated.subscribe(enemy => {
+    subscriptions.push(game.enemyCreated.subscribe(enemy => {
       renderer.enemyCreated(enemy.id, enemy.positionChanged);
-    });
+    }));
 
-    const enemyKilledSub = game.enemyKilled.subscribe(id => {
+    subscriptions.push(game.enemyKilled.subscribe(id => {
       renderer.enemyKilled(id);
-    });
-    app.ticker.add((dt) => game.update(dt));
+    }));
+
+    const ticker = app.ticker.add((dt) => game.update(dt));
+
+    const showEndScreen = (won: boolean) => {
+      ticker.stop();
+      game.destroy();
+      renderer.destroy();
+      audioService.destroy();
+
+      let endMenu = new EndMenu();
+
+      subscriptions.forEach(s => s());
+      subscriptions = [];
+
+      renderer.showEndMenu(won);
+      endMenu.anyButtonClicked.subscribe(() => {
+        location.reload();
+      });
+    }
+
+    subscriptions.push(game.playerDied.subscribe(() => showEndScreen(false)));
+    subscriptions.push(game.playerWon.subscribe(() => showEndScreen(true)));
+  }
+
+
+  startMenu.anyButtonClicked.subscribe(() => {
+    runGame();
   });
+
 });

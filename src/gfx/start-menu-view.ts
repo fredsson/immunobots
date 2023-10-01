@@ -12,7 +12,7 @@ export class StartMenuView implements GameView {
 
   private constructor(private container: HTMLElement, ) {
     this.textElement = document.createElement('div');
-    this.textElement.id = 'start-screen'
+    this.textElement.className = 'menu-text-container';
     this.textElement.innerText = 'Press Any Key to Start!';
 
     container.appendChild(this.textElement);

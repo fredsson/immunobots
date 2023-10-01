@@ -10,4 +10,8 @@ export class AudioService {
   public startBackground() {
     this.bg1Element.play();
   }
+
+  public destroy() {
+    this.bg1Element.pause();
+  }
 }

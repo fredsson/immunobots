@@ -37,6 +37,9 @@ export class Game {
   public enemyCreated: Observable<Enemy> = this.eventPublisher.define('enemyCreated');
   public enemyKilled: Observable<number> = this.eventPublisher.define('enemyKilled');
 
+  public playerDied: Observable<void> = this.eventPublisher.define('playerDied');
+  public playerWon: Observable<void> = this.eventPublisher.define('playerWon');
+
   public zoneLoaded: Observable<Zone> = this.eventPublisher.define('zoneLoaded');
 
   constructor(screenSize: Vec2) {
@@ -48,6 +51,12 @@ export class Game {
 
     this.subscriptions.push(this.player.collision.subscribe(() => {
       this.healthService.remove(10);
+    }));
+
+    this.subscriptions.push(this.healthService.healthChanged.subscribe(health => {
+      if (health <= 0) {
+        this.eventPublisher.emit('playerDied', undefined);
+      }
     }));
   }
 
@@ -102,6 +111,10 @@ export class Game {
       entry.enemy.destroy();
       entry.sub();
       this.eventPublisher.emit('enemyKilled', id);
+      if (!Object.values(this.enemies).length && this.noOfEnemiesLeftToSpawn <= 0) {
+        this.eventPublisher.emit('playerWon', undefined);
+      }
+
     });
     this.enemies[enemy.id] = {
       enemy,

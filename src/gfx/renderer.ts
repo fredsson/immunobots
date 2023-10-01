@@ -1,7 +1,7 @@
 import { Application } from "pixi.js";
 import { PlayerView } from "./player-view";
 import { Camera, CenteredCamera } from "./camera";
-import { Observable } from "../utils/event-publisher";
+import { Observable, Subscription } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
 import { ZoneView } from "./zone-view";
 import { Zone } from "../game/zone";
@@ -10,6 +10,7 @@ import { BulletView } from "./bullet-view";
 import { Bullet } from "../game/bullet";
 import { HealthView } from "./health-view";
 import { StartMenuView } from "./start-menu-view";
+import { EndMenuView } from "./end-menu-view";
 
 export interface GameView {
   init(): void;
@@ -24,6 +25,9 @@ export class Renderer {
   private bulletViews: Record<number, BulletView> = {};
 
   private startMenuView: StartMenuView | undefined;
+  private endMenuView: EndMenuView | undefined;
+
+  private subscriptions: Subscription[] = [];
 
   constructor(
     private container: HTMLElement,
@@ -39,6 +43,9 @@ export class Renderer {
 
   public init() {
     this.startMenuView?.destroy();
+    this.startMenuView = undefined;
+    this.endMenuView?.destroy();
+    this.endMenuView = undefined;
 
     this.application.stage.sortableChildren = true;
     this.views.push(PlayerView.create(this.application.stage, this.camera, this.playerPositionChanged));
@@ -48,20 +55,39 @@ export class Renderer {
 
     this.views.push(HealthView.create(this.container, this.healthChanged));
 
-    this.bulletCreated.subscribe(bullet => {
+    this.subscriptions.push(this.bulletCreated.subscribe(bullet => {
       this.bulletViews[bullet.id] = BulletView.create(this.application.stage, this.camera, bullet);
-    });
+    }));
 
-    this.bulletRemoved.subscribe(bulletId => {
+    this.subscriptions.push(this.bulletRemoved.subscribe(bulletId => {
       const view = this.bulletViews[bulletId];
       view.destroy();
 
       delete this.bulletViews[bulletId];
-    });
+    }));
+  }
+
+  public destroy() {
+    this.startMenuView?.destroy();
+    this.startMenuView = undefined;
+    this.endMenuView?.destroy();
+    this.endMenuView = undefined;
+    this.views.forEach(v => v.destroy());
+    this.views = [];
+    Object.values(this.enemyViews).forEach(v => v.destroy());
+    this.enemyViews = [];
+    Object.values(this.bulletViews).forEach(v => v.destroy());
+    this.bulletViews = {};
+    this.subscriptions.forEach(s => s());
+    this.subscriptions = [];
   }
 
   public showStartMenu() {
     this.startMenuView = StartMenuView.create(this.container);
+  }
+
+  public showEndMenu(won: boolean) {
+    this.endMenuView = EndMenuView.create(this.container, won);
   }
 
   public enemyCreated(id: number, positionChanged: Observable<Vec2>) {
