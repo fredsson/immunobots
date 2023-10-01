@@ -36,7 +36,7 @@ export class Game {
       this.player.init(this.zone.playerStartPosition);
       this.eventPublisher.emit('zoneLoaded', this.zone);
 
-      const enemy = new Bacteria(1, {...this.zone.randomEnemyStartPosition()});
+      const enemy = new Bacteria(this.collisionManager, 1, {...this.zone.randomEnemyStartPosition()});
       this.enemies.push(enemy);
       this.eventPublisher.emit('enemyCreated', enemy);
     });
@@ -50,6 +50,7 @@ export class Game {
 
   public update(dt: number) {
     this.player.update(dt);
+    this.enemies.forEach(e => e.update(dt));
   }
 
 }

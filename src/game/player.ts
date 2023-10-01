@@ -39,8 +39,6 @@ export class Player {
       };
 
       this.currentMouseDirection = Vec2.normalize(Vec2.sub({x: event.x, y: event.y}, center));
-      console.log(this.currentMouseDirection);
-
     }, {signal: this.abortController.signal});
 
     window.addEventListener('keydown', (event) => {
