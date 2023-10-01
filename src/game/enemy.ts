@@ -9,6 +9,7 @@ export interface Enemy {
   positionChanged: Observable<Vec2>;
 
   update(dt: number): void;
+  destroy(): void;
 }
 
 
@@ -16,6 +17,7 @@ export class Bacteria implements Enemy {
   private eventPublisher = new EventPublisher();
 
   public positionChanged = this.eventPublisher.define<Vec2>('positionChanged');
+  public killed = this.eventPublisher.define<number>('enemyKilled');
 
   private movementDirection: Vec2;
   private currentPosition: Vec2;
@@ -41,7 +43,15 @@ export class Bacteria implements Enemy {
     }
 
     this.currentPosition = potentialPosition;
+
     this.eventPublisher.emit('positionChanged', this.currentPosition);
+
+    if (this.collisionWithBullet()) {
+      this.eventPublisher.emit('enemyKilled', this.id);
+    }
+  }
+
+  public destroy() {
   }
 
   private collisionFromCenter(potentialPosition: Vec2) {
@@ -64,5 +74,14 @@ export class Bacteria implements Enemy {
     });
 
     return collided;
+  }
+
+  private collisionWithBullet() {
+    const offsetedPosition = {
+      x: this.currentPosition.x - 32,
+      y: this.currentPosition.y - 32,
+    };
+
+    return this.collisionManager.collidesWithBullet({position: offsetedPosition, size: {x: 64, y: 64}});
   }
 }

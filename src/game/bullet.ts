@@ -1,6 +1,6 @@
 import { EventPublisher, Observable } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
-import { CollisionManager } from "./collision-manager";
+import { CollisionManager, CollisionRect } from "./collision-manager";
 const BulletSpeed = 10;
 
 export class Bullet {
@@ -9,6 +9,11 @@ export class Bullet {
   public positionChanged: Observable<Vec2> = this.eventPublisher.define('positionChanged');
 
   private currentPosition: Vec2;
+
+  public size: Vec2 = {
+    x: 0,
+    y: 0
+  }
 
   constructor(
     public readonly id: number,
@@ -33,6 +38,17 @@ export class Bullet {
 
     this.currentPosition = potentialPosition;
     this.eventPublisher.emit('positionChanged', this.currentPosition);
+  }
+
+  public get collisionRect(): CollisionRect {
+    return {
+      position: this.currentPosition,
+      size: {x: 32, y: 32}
+    };
+  }
+
+  public onCollision() {
+    this.destroyCallback(this.id);
   }
 
   private collisionFromCenter(potentialPosition: Vec2) {

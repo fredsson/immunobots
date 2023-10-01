@@ -1,4 +1,4 @@
-import { EventPublisher, Observable } from "../utils/event-publisher";
+import { EventPublisher, Observable, Subscription } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
 import { Bullet } from "./bullet";
 import { CollisionManager } from "./collision-manager";
@@ -15,7 +15,7 @@ export class Game {
 
   private healthService = new HealthService();
 
-  private enemies: Enemy[] = [];
+  private enemies: Record<number,{enemy: Enemy, sub: Subscription}> = {};
 
   private eventPublisher = new EventPublisher();
 
@@ -25,6 +25,7 @@ export class Game {
   public healthChanged: Observable<number> = this.healthService.healthChanged;
 
   public enemyCreated: Observable<Enemy> = this.eventPublisher.define('enemyCreated');
+  public enemyKilled: Observable<number> = this.eventPublisher.define('enemyKilled');
 
   public zoneLoaded: Observable<Zone> = this.eventPublisher.define('zoneLoaded');
 
@@ -40,11 +41,8 @@ export class Game {
       this.player.init(this.zone.playerStartPosition);
       this.eventPublisher.emit('zoneLoaded', this.zone);
 
-      const enemy = new Bacteria(this.collisionManager, 1, {...this.zone.randomEnemyStartPosition()});
-      this.enemies.push(enemy);
-      this.eventPublisher.emit('enemyCreated', enemy);
+      this.spawnEnemy(z);
     });
-
   }
 
   public destroy() {
@@ -54,7 +52,22 @@ export class Game {
 
   public update(dt: number) {
     this.player.update(dt);
-    this.enemies.forEach(e => e.update(dt));
+    Object.values(this.enemies).forEach(e => e.enemy.update(dt));
   }
 
+  private spawnEnemy(zone: Zone) {
+    const enemy = new Bacteria(this.collisionManager, 1, {...zone.randomEnemyStartPosition()});
+    const enemySub = enemy.killed.subscribe(id => {
+      const entry = this.enemies[id];
+      delete this.enemies[id];
+      entry.enemy.destroy();
+      entry.sub();
+      this.eventPublisher.emit('enemyKilled', id);
+    });
+    this.enemies[enemy.id] = {
+      enemy,
+      sub: enemySub
+    };
+    this.eventPublisher.emit('enemyCreated', enemy);
+  }
 }

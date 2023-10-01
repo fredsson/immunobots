@@ -53,11 +53,15 @@ export class Player {
         const bullet = new Bullet(
           ++this.nextBulletId,
           this.collisionManager,
-          (id) => this.removeBullet(id),
+          (id) => {
+            this.collisionManager.removeBullet(id);
+            this.removeBullet(id);
+          },
           this.currentPosition,
           this.currentMouseDirection
         );
         this.bullets.push(bullet);
+        this.collisionManager.addBullet(bullet);
         this.eventPublisher.emit('bulletCreated', bullet);
       }
 

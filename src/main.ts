@@ -27,5 +27,9 @@ window.addEventListener('DOMContentLoaded', () => {
     renderer.enemyCreated(enemy.id, enemy.positionChanged);
   });
 
+  const enemyKilledSub = game.enemyKilled.subscribe(id => {
+    renderer.enemyKilled(id);
+  });
+
   app.ticker.add((dt) => game.update(dt));
 })

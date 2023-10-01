@@ -1,7 +1,7 @@
 import { Assets, Container, DisplayObject, Sprite } from "pixi.js";
 import { GameView } from "./renderer";
 import { Camera } from "./camera";
-import { Observable } from "../utils/event-publisher";
+import { Observable, Subscription } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
 
 export class EnemyView implements GameView {
@@ -14,6 +14,9 @@ export class EnemyView implements GameView {
   private sprite?: Sprite;
   private currentPosition?: Vec2;
 
+  private cameraSub?: Subscription;
+  private positionChangedSub?: Subscription;
+
   private constructor(private stage: Container<DisplayObject>, private camera: Camera, private positionChanged: Observable<Vec2>) {
   }
 
@@ -24,7 +27,7 @@ export class EnemyView implements GameView {
       this.sprite.anchor.x = 0.5;
       this.sprite.anchor.y = 0.5;
       this.stage.addChild(this.sprite);
-      this.camera.positionChanged.subscribe(() => {
+      this.cameraSub = this.camera.positionChanged.subscribe(() => {
         if (this.currentPosition && this.sprite) {
           const screenSpace = this.camera.toScreenSpace(this.currentPosition);
           this.sprite.x = screenSpace.x;
@@ -43,6 +46,8 @@ export class EnemyView implements GameView {
   }
 
   public destroy() {
+    this.cameraSub?.();
+    this.positionChangedSub?.();
     if (this.sprite) {
       this.stage.removeChild(this.sprite);
     }

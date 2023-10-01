@@ -55,4 +55,11 @@ export class Renderer {
   public enemyCreated(id: number, positionChanged: Observable<Vec2>) {
     this.enemyViews[id] = EnemyView.create(this.application.stage, this.camera, positionChanged);
   }
+
+  public enemyKilled(id: number) {
+    const view = this.enemyViews[id];
+    delete this.enemyViews[id];
+
+    view.destroy();
+  }
 }
