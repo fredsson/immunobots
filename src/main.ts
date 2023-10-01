@@ -13,7 +13,15 @@ window.addEventListener('DOMContentLoaded', () => {
   container.appendChild(app.view as any);
 
   const game = new Game({x: app.screen.width , y: app.screen.height});
-  const renderer = new Renderer(app, game.playerPositionChanged, game.zoneLoaded, game.bulletCreated, game.bulletRemoved);
+  const renderer = new Renderer(
+    container,
+    app,
+    game.playerPositionChanged,
+    game.zoneLoaded,
+    game.bulletCreated,
+    game.bulletRemoved,
+    game.healthChanged
+  );
 
   const enemyCreatedSub = game.enemyCreated.subscribe(enemy => {
     renderer.enemyCreated(enemy.id, enemy.positionChanged);

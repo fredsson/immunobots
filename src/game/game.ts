@@ -3,6 +3,7 @@ import { Vec2 } from "../utils/vec";
 import { Bullet } from "./bullet";
 import { CollisionManager } from "./collision-manager";
 import { Bacteria, Enemy } from "./enemy";
+import { HealthService } from "./health-service";
 import { Player } from "./player";
 import { Zone } from "./zone";
 
@@ -12,6 +13,8 @@ export class Game {
   private player: Player;
   private zone?: Zone;
 
+  private healthService = new HealthService();
+
   private enemies: Enemy[] = [];
 
   private eventPublisher = new EventPublisher();
@@ -19,6 +22,7 @@ export class Game {
   public playerPositionChanged: Observable<Vec2>;
   public bulletCreated: Observable<Bullet>;
   public bulletRemoved: Observable<number>;
+  public healthChanged: Observable<number> = this.healthService.healthChanged;
 
   public enemyCreated: Observable<Enemy> = this.eventPublisher.define('enemyCreated');
 

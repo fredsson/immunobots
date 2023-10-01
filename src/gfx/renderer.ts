@@ -8,6 +8,7 @@ import { Zone } from "../game/zone";
 import { EnemyView } from "./enemy-view";
 import { BulletView } from "./bullet-view";
 import { Bullet } from "../game/bullet";
+import { HealthView } from "./health-view";
 
 export interface GameView {
   init(): void;
@@ -21,13 +22,23 @@ export class Renderer {
   private enemyViews: Record<number, EnemyView> = {};
   private bulletViews: Record<number, BulletView> = {};
 
-  constructor(private application: Application, playerPositionChanged: Observable<Vec2>, zoneLoaded: Observable<Zone>, bulletCreated: Observable<Bullet>, bulletRemoved: Observable<number>) {
+  constructor(
+    container: HTMLElement,
+    private application: Application,
+    playerPositionChanged: Observable<Vec2>,
+    zoneLoaded: Observable<Zone>,
+    bulletCreated: Observable<Bullet>,
+    bulletRemoved: Observable<number>,
+    healthChanged: Observable<number>
+  ) {
     this.camera = new CenteredCamera(application.screen, playerPositionChanged);
     application.stage.sortableChildren = true;
     this.views.push(PlayerView.create(application.stage, this.camera, playerPositionChanged));
     zoneLoaded.subscribe(zone => {
       this.views.push(ZoneView.create(application.stage, this.camera, zone));
     });
+
+    this.views.push(HealthView.create(container, healthChanged));
 
     bulletCreated.subscribe(bullet => {
       this.bulletViews[bullet.id] = BulletView.create(application.stage, this.camera, bullet);
