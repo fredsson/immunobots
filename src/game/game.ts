@@ -8,12 +8,14 @@ import { Player } from "./player";
 import { Zone } from "./zone";
 
 export class Game {
+  private totalEnemies = 10;
+
   private collisionManager = new CollisionManager();
 
   private player: Player;
   private zone?: Zone;
 
-  private healthService = new HealthService();
+  private healthService = new HealthService(this.totalEnemies);
 
   private enemies: Record<number,{enemy: Enemy, sub: Subscription}> = {};
   private nextEnemyId = 1;
@@ -21,7 +23,7 @@ export class Game {
   private eventPublisher = new EventPublisher();
 
   // win condition, kill all enemies before health reaches 0
-  private noOfEnemiesLeftToSpawn = 10;
+  private noOfEnemiesLeftToSpawn = this.totalEnemies;
 
   private spawnTimerId: number | undefined;
 
@@ -66,6 +68,13 @@ export class Game {
   public update(dt: number) {
     this.player.update(dt);
     Object.values(this.enemies).forEach(e => e.enemy.update(dt));
+
+    this.decreaseHealthBasedOnEnemiesAlive(dt);
+  }
+
+  private decreaseHealthBasedOnEnemiesAlive(dt: number) {
+    const enemiesAlive = Object.values(this.enemies).length;
+    this.healthService.removeBasedOnEnemies(enemiesAlive, dt);
   }
 
   private scheduleEnemyToBeSpawned() {
