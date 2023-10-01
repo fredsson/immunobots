@@ -23,7 +23,6 @@ export class HealthService {
     const amount = enemiesAlive * this.healthDecreasePerEnemy * dt;
     this.health -= amount;
     this.health = Math.max(this.health, 0);
-    console.log(this.health);
 
     this.eventPublisher.emit('healthChanged', this.health);
   }
