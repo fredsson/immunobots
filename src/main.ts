@@ -1,6 +1,8 @@
 import { Application } from "pixi.js";
 import { Game } from "./game/game";
 import { Renderer } from "./gfx/renderer";
+import { StartMenu } from "./game/start-menu";
+import { AudioService } from "./sfx/audio-service";
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -9,8 +11,11 @@ window.addEventListener('DOMContentLoaded', () => {
     console.error('Could not find container for the game!');
     return;
   }
+
   const app = new Application({ backgroundColor: '#1099bb', resizeTo: container});
   container.appendChild(app.view as any);
+
+  const audioService = new AudioService();
 
   const game = new Game({x: app.screen.width , y: app.screen.height});
   const renderer = new Renderer(
@@ -23,13 +28,23 @@ window.addEventListener('DOMContentLoaded', () => {
     game.healthChanged
   );
 
-  const enemyCreatedSub = game.enemyCreated.subscribe(enemy => {
-    renderer.enemyCreated(enemy.id, enemy.positionChanged);
-  });
+  const startMenu = new StartMenu();
+  renderer.showStartMenu();
 
-  const enemyKilledSub = game.enemyKilled.subscribe(id => {
-    renderer.enemyKilled(id);
-  });
+  startMenu.anyButtonClicked.subscribe(() => {
+    startMenu.destroy();
+    game.init();
+    renderer.init();
 
-  app.ticker.add((dt) => game.update(dt));
-})
+    audioService.startBackground();
+
+    const enemyCreatedSub = game.enemyCreated.subscribe(enemy => {
+      renderer.enemyCreated(enemy.id, enemy.positionChanged);
+    });
+
+    const enemyKilledSub = game.enemyKilled.subscribe(id => {
+      renderer.enemyKilled(id);
+    });
+    app.ticker.add((dt) => game.update(dt));
+  });
+});

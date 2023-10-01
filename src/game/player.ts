@@ -31,14 +31,16 @@ export class Player {
 
   public id = 0;
 
-  constructor(private collisionManager: CollisionManager, screenSize: Vec2) {
-    this.eventPublisher.emit('positionChanged', this.currentPosition);
+  constructor(private collisionManager: CollisionManager, private screenSize: Vec2) {
+  }
+
+  public init(startPosition: Vec2) {
+    this.currentPosition = startPosition;
 
     window.addEventListener('mousemove', (event) => {
-      // get vector from center of screen
       const center = {
-        x: screenSize.x / 2,
-        y: screenSize.y / 2
+        x: this.screenSize.x / 2,
+        y: this.screenSize.y / 2
       };
 
       this.currentMouseDirection = Vec2.normalize(Vec2.sub({x: event.x, y: event.y}, center));
@@ -73,10 +75,6 @@ export class Player {
     window.addEventListener('keyup', (event) => {
       this.activeMovement = this.activeMovement.filter(am => am.key !== event.key);
     }, {signal: this.abortController.signal});
-  }
-
-  public init(startPosition: Vec2) {
-    this.currentPosition = startPosition;
 
     this.eventPublisher.emit('positionChanged', this.currentPosition);
   }

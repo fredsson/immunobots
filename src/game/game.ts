@@ -27,6 +27,8 @@ export class Game {
 
   private spawnTimerId: number | undefined;
 
+  private subscriptions: Subscription[] = [];
+
   public playerPositionChanged: Observable<Vec2>;
   public bulletCreated: Observable<Bullet>;
   public bulletRemoved: Observable<number>;
@@ -44,10 +46,12 @@ export class Game {
     this.bulletCreated = this.player.bulletCreated;
     this.bulletRemoved = this.player.bulletRemoved;
 
-    this.player.collision.subscribe(() => {
+    this.subscriptions.push(this.player.collision.subscribe(() => {
       this.healthService.remove(10);
-    });
+    }));
+  }
 
+  public init() {
     Zone.load('demo', this.collisionManager).then(z => {
       this.zone = z;
       this.player.init(this.zone.playerStartPosition);
@@ -63,6 +67,7 @@ export class Game {
     if (this.spawnTimerId) {
       window.clearTimeout(this.spawnTimerId);
     }
+    this.subscriptions.forEach(s => s());
   }
 
   public update(dt: number) {

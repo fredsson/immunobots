@@ -42,3 +42,9 @@ time, mark, audio, video {
 	height: 50px;
 	background-color: green;
 }
+
+#start-screen {
+	position: absolute;
+	left: 40%;
+	top: 70%;
+}
