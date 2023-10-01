@@ -22,6 +22,8 @@ export class Bacteria implements Enemy {
   private movementDirection: Vec2;
   private currentPosition: Vec2;
 
+  private noOfFramesStuck = 0;
+
   constructor(private collisionManager: CollisionManager, public id: number, startPosition: Vec2) {
     this.currentPosition = startPosition;
     this.movementDirection = Vec2.normalize({
@@ -33,22 +35,30 @@ export class Bacteria implements Enemy {
   }
 
   public update(dt: number): void {
+    if (this.collisionWithBullet() || this.collisionWithPlayer()) {
+      this.eventPublisher.emit('enemyKilled', this.id);
+    }
+
     const potentialPosition = {
       x: this.currentPosition.x + (this.movementDirection.x * EnemeySpeed * dt),
       y: this.currentPosition.y + (this.movementDirection.y * EnemeySpeed * dt),
-    }
+    };
 
     if (this.collisionFromCenter(potentialPosition)) {
+      this.noOfFramesStuck++;
+      if (this.noOfFramesStuck > 10) {
+        this.movementDirection = {
+          x: -this.movementDirection.x,
+          y: -this.movementDirection.y
+        };
+      }
       return;
     }
+    this.noOfFramesStuck = 0;
 
     this.currentPosition = potentialPosition;
 
     this.eventPublisher.emit('positionChanged', this.currentPosition);
-
-    if (this.collisionWithBullet() || this.collisionWithPlayer()) {
-      this.eventPublisher.emit('enemyKilled', this.id);
-    }
   }
 
   public destroy() {

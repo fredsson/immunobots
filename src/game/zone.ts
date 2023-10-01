@@ -72,6 +72,8 @@ export class Zone {
     });
   }
 
+  private currentStartPositionIndex = 0;
+
   constructor(
     public readonly playerStartPosition: Vec2,
     private enemyStartPositions: Vec2[],
@@ -82,10 +84,8 @@ export class Zone {
   public destroy(): void {
   }
 
-  public randomEnemyStartPosition() {
-    const index = Math.round(Math.random() * this.enemyStartPositions.length - 1);
-
-    return this.enemyStartPositions[index];
+  public nextEnemyStartPosition() {
+    return this.enemyStartPositions[this.currentStartPositionIndex++];
   }
 
 }

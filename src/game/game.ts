@@ -16,8 +16,14 @@ export class Game {
   private healthService = new HealthService();
 
   private enemies: Record<number,{enemy: Enemy, sub: Subscription}> = {};
+  private nextEnemyId = 1;
 
   private eventPublisher = new EventPublisher();
+
+  // win condition, kill all enemies before health reaches 0
+  private noOfEnemiesLeftToSpawn = 10;
+
+  private spawnTimerId: number | undefined;
 
   public playerPositionChanged: Observable<Vec2>;
   public bulletCreated: Observable<Bullet>;
@@ -28,7 +34,6 @@ export class Game {
   public enemyKilled: Observable<number> = this.eventPublisher.define('enemyKilled');
 
   public zoneLoaded: Observable<Zone> = this.eventPublisher.define('zoneLoaded');
-
 
   constructor(screenSize: Vec2) {
     this.player = new Player(this.collisionManager, screenSize);
@@ -46,13 +51,16 @@ export class Game {
       this.player.init(this.zone.playerStartPosition);
       this.eventPublisher.emit('zoneLoaded', this.zone);
 
-      this.spawnEnemy(z);
+      this.scheduleEnemyToBeSpawned();
     });
   }
 
   public destroy() {
     this.player.destroy();
     this.zone?.destroy();
+    if (this.spawnTimerId) {
+      window.clearTimeout(this.spawnTimerId);
+    }
   }
 
   public update(dt: number) {
@@ -60,8 +68,20 @@ export class Game {
     Object.values(this.enemies).forEach(e => e.enemy.update(dt));
   }
 
+  private scheduleEnemyToBeSpawned() {
+    if (this.noOfEnemiesLeftToSpawn <= 0) {
+      return;
+    }
+    this.noOfEnemiesLeftToSpawn--;
+    this.spawnTimerId = window.setTimeout(() => {
+      if (this.zone) {
+        this.spawnEnemy(this.zone);
+      }
+    }, 1000 + (Math.random() * 2500));
+  }
+
   private spawnEnemy(zone: Zone) {
-    const enemy = new Bacteria(this.collisionManager, 1, {...zone.randomEnemyStartPosition()});
+    const enemy = new Bacteria(this.collisionManager, ++this.nextEnemyId, {...zone.nextEnemyStartPosition()});
     const enemySub = enemy.killed.subscribe(id => {
       const entry = this.enemies[id];
       delete this.enemies[id];
@@ -74,5 +94,6 @@ export class Game {
       sub: enemySub
     };
     this.eventPublisher.emit('enemyCreated', enemy);
+    this.scheduleEnemyToBeSpawned();
   }
 }
