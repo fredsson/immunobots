@@ -46,6 +46,10 @@ window.addEventListener('DOMContentLoaded', () => {
       audioService.playShootSound();
     }));
 
+    subscriptions.push(game.enemyKilled.subscribe(() => {
+      audioService.playEnemyDeathSound();
+    }));
+
     subscriptions.push(game.enemyCreated.subscribe(enemy => {
       renderer.enemyCreated(enemy.id, enemy.positionChanged);
     }));

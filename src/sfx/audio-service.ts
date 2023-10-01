@@ -1,8 +1,8 @@
 
 export class AudioService {
   private bg1Element: HTMLAudioElement;
-
   private shootSounds: HTMLAudioElement[] = [];
+  private deathSounds: HTMLAudioElement[] = [];
 
   constructor() {
     this.bg1Element = document.getElementById('bg1') as HTMLAudioElement;
@@ -13,6 +13,12 @@ export class AudioService {
       document.getElementById('shoot2') as HTMLAudioElement,
       document.getElementById('shoot3') as HTMLAudioElement,
     );
+
+    this.deathSounds.push(
+      document.getElementById('enemy_death1') as HTMLAudioElement,
+      document.getElementById('enemy_death2') as HTMLAudioElement,
+      document.getElementById('enemy_death3') as HTMLAudioElement,
+    );
   }
 
   public startBackground() {
@@ -21,8 +27,12 @@ export class AudioService {
 
   public playShootSound() {
     const index = Math.round(Math.random() * (this.shootSounds.length - 1));
-    console.log('decided to shoot', index);
     this.shootSounds[index].play();
+  }
+
+  public playEnemyDeathSound() {
+    const index = Math.round(Math.random() * (this.deathSounds.length - 1));
+    this.deathSounds[index].play();
   }
 
   public destroy() {
