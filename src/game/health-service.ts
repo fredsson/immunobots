@@ -10,4 +10,9 @@ export class HealthService {
     this.eventPublisher.emit('healthChanged', this.health);
   }
 
+  public remove(amount: number): void {
+    this.health -= amount;
+    this.eventPublisher.emit('healthChanged', this.health);
+  }
+
 }

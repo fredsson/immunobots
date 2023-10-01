@@ -1,7 +1,7 @@
 import { EventPublisher } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
 import { Bullet } from "./bullet";
-import { CollisionManager } from "./collision-manager";
+import { CollisionManager, CollisionRect } from "./collision-manager";
 
 const PlayerSpeed = 5;
 
@@ -20,6 +20,7 @@ export class Player {
   public positionChanged = this.eventPublisher.define<Vec2>('positionChanged');
   public bulletCreated = this.eventPublisher.define<Bullet>('bulletCreated');
   public bulletRemoved = this.eventPublisher.define<number>('bulletRemoved');
+  public collision = this.eventPublisher.define<undefined>('collision');
 
   private activeMovement: {key: string, direction: Vec2}[] = [];
 
@@ -27,6 +28,8 @@ export class Player {
 
   private bullets: Bullet[] = [];
   private nextBulletId = 0;
+
+  public id = 0;
 
   constructor(private collisionManager: CollisionManager, screenSize: Vec2) {
     this.eventPublisher.emit('positionChanged', this.currentPosition);
@@ -93,6 +96,17 @@ export class Player {
         this.eventPublisher.emit('positionChanged', this.currentPosition);
       }
     }
+  }
+
+  public get collisionRect(): CollisionRect {
+    return {
+      position: this.currentPosition,
+      size: {x: 64, y: 64},
+    }
+  }
+
+  public onCollision() {
+    this.eventPublisher.emit('collision', undefined);
   }
 
   public destroy(): void {

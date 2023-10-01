@@ -32,9 +32,14 @@ export class Game {
 
   constructor(screenSize: Vec2) {
     this.player = new Player(this.collisionManager, screenSize);
+    this.collisionManager.addPlayer(this.player);
     this.playerPositionChanged = this.player.positionChanged;
     this.bulletCreated = this.player.bulletCreated;
     this.bulletRemoved = this.player.bulletRemoved;
+
+    this.player.collision.subscribe(() => {
+      this.healthService.remove(10);
+    });
 
     Zone.load('demo', this.collisionManager).then(z => {
       this.zone = z;

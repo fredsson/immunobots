@@ -46,7 +46,7 @@ export class Bacteria implements Enemy {
 
     this.eventPublisher.emit('positionChanged', this.currentPosition);
 
-    if (this.collisionWithBullet()) {
+    if (this.collisionWithBullet() || this.collisionWithPlayer()) {
       this.eventPublisher.emit('enemyKilled', this.id);
     }
   }
@@ -83,5 +83,14 @@ export class Bacteria implements Enemy {
     };
 
     return this.collisionManager.collidesWithBullet({position: offsetedPosition, size: {x: 64, y: 64}});
+  }
+
+  private collisionWithPlayer() {
+    const offsetedPosition = {
+      x: this.currentPosition.x - 32,
+      y: this.currentPosition.y - 32,
+    };
+
+    return this.collisionManager.collidesWithPlayer({position: offsetedPosition, size: {x: 64, y: 64}});
   }
 }

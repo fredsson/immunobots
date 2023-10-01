@@ -15,9 +15,15 @@ export class CollisionManager {
   private staticObjects: CollisionRect[] = [];
 
   private bullets: Record<number, CollisionObject> = {};
+  private player?: CollisionObject;
 
   public addZoneTile(rect: CollisionRect): void {
     this.staticObjects.push(rect);
+  }
+
+
+  public addPlayer(player: CollisionObject): void {
+    this.player = player;
   }
 
   public addBullet(bullet: CollisionObject): void {
@@ -33,7 +39,7 @@ export class CollisionManager {
     return staticCollisions.length > 0;
   }
 
-  public collidesWithBullet(rect: CollisionRect) {
+  public collidesWithBullet(rect: CollisionRect): boolean {
     const bulletCollisions = Object.values(this.bullets).filter(v => this.boxCollision(rect, v.collisionRect));
 
     if (bulletCollisions.length) {
@@ -42,7 +48,20 @@ export class CollisionManager {
     return bulletCollisions.length > 0;
   }
 
-  private boxCollision(rect: CollisionRect, o: CollisionRect) {
+  public collidesWithPlayer(rect: CollisionRect): boolean {
+    if (!this.player) {
+      return false;
+    }
+
+    const collides = this.boxCollision(rect, this.player.collisionRect);
+    if (collides) {
+      this.player.onCollision();
+    }
+
+    return collides;
+  }
+
+  private boxCollision(rect: CollisionRect, o: CollisionRect): boolean {
     const insideX = rect.position.x < o.position.x + o.size.x && rect.position.x + rect.size.x > o.position.x;
     const insideY = rect.position.y < o.position.y + o.size.y && rect.position.y + rect.size.y > o.position.y;
 
