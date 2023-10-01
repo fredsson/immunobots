@@ -1,8 +1,6 @@
 import { Vec2 } from "../utils/vec";
 import { TileType } from "./zone";
 
-const OpenTileTokens = ['T', 'S', 'E'];
-
 const getIndexFromCoordinates = (position: Vec2, delta: Vec2, width: number, height: number) => {
   const x = position.x + delta.x;
   const y = position.y + delta.y;
@@ -30,12 +28,13 @@ const getNeighborToken = (tokens: string[], indexCallback: () => number | undefi
 export class ZoneTileParser  {
   public static StartTileToken = 'S';
   public static EnemyStartTileToken = 'E';
+  public static OpenTileTokens = ['T', 'S', 'E'];
 
   constructor(private tokens: string[], private width: number, private height: number) {
   }
 
   public tokenBasedOnNeighbors(token: string, position: Vec2) {
-    if (OpenTileTokens.includes(token)) {
+    if (ZoneTileParser.OpenTileTokens.includes(token)) {
       return TileType.Open;
     }
 
@@ -58,7 +57,7 @@ export class ZoneTileParser  {
           token
         };
       })
-      .filter(n => n.token && OpenTileTokens.includes(n.token));
+      .filter(n => n.token && ZoneTileParser.OpenTileTokens.includes(n.token));
 
     if (includedNeighbors.length) {
 

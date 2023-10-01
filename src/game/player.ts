@@ -1,5 +1,6 @@
 import { EventPublisher, Observable } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
+import { CollisionManager } from "./collision-manager";
 
 const PlayerSpeed = 5;
 
@@ -20,7 +21,7 @@ export class Player {
 
   private activeMovement: {key: string, direction: Vec2}[] = [];
 
-  constructor() {
+  constructor(private collisionManager: CollisionManager) {
     this.eventPublisher.emit('positionChanged', this.currentPosition);
     window.addEventListener('keydown', (event) => {
       const movement = MovementByKey[event.key];
@@ -45,11 +46,15 @@ export class Player {
   public update(dt: number): void {
     const {x: dx, y: dy} = this.calculateMovement();
     if (dx !== 0 || dy !== 0) {
-      this.currentPosition = {
+      const potentialPosition = {
         x: Math.round(this.currentPosition.x + PlayerSpeed * dx * dt),
         y: Math.round(this.currentPosition.y + PlayerSpeed * dy * dt),
       };
-      this.eventPublisher.emit('positionChanged', this.currentPosition);
+
+      if(!this.collisionFromCenter(potentialPosition)) {
+        this.currentPosition = potentialPosition;
+        this.eventPublisher.emit('positionChanged', this.currentPosition);
+      }
     }
   }
 
@@ -61,5 +66,14 @@ export class Player {
     return Vec2.normalize(this.activeMovement
       .map(v => v.direction)
       .reduce((acc, value) => Vec2.add(acc, value), {x: 0, y: 0}));
+  }
+
+  private collisionFromCenter(potentialPosition: Vec2) {
+    const offsetedPosition = {
+      x: potentialPosition.x - 32,
+      y: potentialPosition.y - 32,
+    };
+
+    return this.collisionManager.collides({position: offsetedPosition, size: {x: 64, y: 64}})
   }
 }

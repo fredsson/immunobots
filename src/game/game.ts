@@ -1,11 +1,14 @@
 import { EventPublisher, Observable } from "../utils/event-publisher";
 import { Vec2 } from "../utils/vec";
+import { CollisionManager } from "./collision-manager";
 import { Bacteria, Enemy } from "./enemy";
 import { Player } from "./player";
 import { Zone } from "./zone";
 
 export class Game {
-  private player: Player = new Player();
+  private collisionManager = new CollisionManager();
+
+  private player: Player = new Player(this.collisionManager);
   private zone?: Zone;
 
   private enemies: Enemy[] = [];
@@ -19,7 +22,7 @@ export class Game {
 
 
   constructor() {
-    Zone.load('demo').then(z => {
+    Zone.load('demo', this.collisionManager).then(z => {
       this.zone = z;
       this.player.init(this.zone.playerStartPosition);
       this.eventPublisher.emit('zoneLoaded', this.zone);

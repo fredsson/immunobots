@@ -1,4 +1,5 @@
 import { Vec2 } from "../utils/vec";
+import { CollisionManager } from "./collision-manager";
 import { ZoneTileParser } from "./zone-tile-parser";
 
 export enum TileType {
@@ -20,7 +21,7 @@ class ZoneTile {
 }
 
 export class Zone {
-  public static async load(zoneName: string): Promise<Zone> {
+  public static async load(zoneName: string, collisionManager: CollisionManager): Promise<Zone> {
     return new Promise(resolve => {
       fetch(`assets/zones/${zoneName}.txt`)
         .then(response => response.text())
@@ -56,6 +57,13 @@ export class Zone {
             }
 
             const tileType = tileParser.tokenBasedOnNeighbors(v, {x, y});
+            if (!ZoneTileParser.OpenTileTokens.includes(v)) {
+              collisionManager.addZoneTile({
+                position: {x: x*128, y: y*128},
+                size: {x: 128, y: 128},
+              });
+            }
+
             tiles.push(new ZoneTile(tileType));
           });
 
