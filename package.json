@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "build": "vite build",
     "test": "vitest"
   },
   "author": "Fredrik Andersson",
