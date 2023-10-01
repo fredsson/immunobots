@@ -12,8 +12,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const app = new Application({ backgroundColor: '#1099bb', resizeTo: container});
   container.appendChild(app.view as any);
 
-  const game = new Game();
-  const renderer = new Renderer(app, game.playerPositionChanged, game.zoneLoaded);
+  const game = new Game({x: app.screen.width , y: app.screen.height});
+  const renderer = new Renderer(app, game.playerPositionChanged, game.zoneLoaded, game.bulletCreated, game.bulletRemoved);
 
   const enemyCreatedSub = game.enemyCreated.subscribe(enemy => {
     renderer.enemyCreated(enemy.id, enemy.positionChanged);
