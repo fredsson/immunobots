@@ -42,6 +42,10 @@ window.addEventListener('DOMContentLoaded', () => {
 
     audioService.startBackground();
 
+    subscriptions.push(game.bulletCreated.subscribe(() => {
+      audioService.playShootSound();
+    }));
+
     subscriptions.push(game.enemyCreated.subscribe(enemy => {
       renderer.enemyCreated(enemy.id, enemy.positionChanged);
     }));
