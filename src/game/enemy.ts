@@ -60,7 +60,6 @@ export class Bacteria implements Enemy {
           y: d.blah.y * this.movementDirection.y
         }
         collided = true;
-        console.log(d.position, this.movementDirection);
       }
     });
 
