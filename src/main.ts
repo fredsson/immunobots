@@ -60,7 +60,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     const ticker = app.ticker.add((dt) => game.update(dt));
 
-    const showEndScreen = (won: boolean) => {
+    const showEndScreen = (won: boolean, healthLeft: number = 0) => {
       ticker.stop();
       game.destroy();
       renderer.destroy();
@@ -71,14 +71,14 @@ window.addEventListener('DOMContentLoaded', () => {
       subscriptions.forEach(s => s());
       subscriptions = [];
 
-      renderer.showEndMenu(won);
+      renderer.showEndMenu(won, healthLeft);
       endMenu.anyButtonClicked.subscribe(() => {
         location.reload();
       });
     }
 
     subscriptions.push(game.playerDied.subscribe(() => showEndScreen(false)));
-    subscriptions.push(game.playerWon.subscribe(() => showEndScreen(true)));
+    subscriptions.push(game.playerWon.subscribe(healthLeft => showEndScreen(true, healthLeft)));
   }
 
 

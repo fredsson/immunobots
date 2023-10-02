@@ -38,7 +38,7 @@ export class Game {
   public enemyKilled: Observable<number> = this.eventPublisher.define('enemyKilled');
 
   public playerDied: Observable<void> = this.eventPublisher.define('playerDied');
-  public playerWon: Observable<void> = this.eventPublisher.define('playerWon');
+  public playerWon: Observable<number> = this.eventPublisher.define('playerWon');
 
   public zoneLoaded: Observable<Zone> = this.eventPublisher.define('zoneLoaded');
 
@@ -112,7 +112,7 @@ export class Game {
       entry.sub();
       this.eventPublisher.emit('enemyKilled', id);
       if (!Object.values(this.enemies).length && this.noOfEnemiesLeftToSpawn <= 0) {
-        this.eventPublisher.emit('playerWon', undefined);
+        this.eventPublisher.emit('playerWon', this.healthService.currentHealth);
       }
 
     });

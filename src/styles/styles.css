@@ -45,7 +45,7 @@ time, mark, audio, video {
 
 .menu-text-container {
 	position: absolute;
-	left: 40%;
+	text-align: center;
 	top: 70%;
 }
 

@@ -91,8 +91,8 @@ export class Renderer {
     this.startMenuView = StartMenuView.create(this.container);
   }
 
-  public showEndMenu(won: boolean) {
-    this.endMenuView = EndMenuView.create(this.container, won);
+  public showEndMenu(won: boolean, healthLeft: number) {
+    this.endMenuView = EndMenuView.create(this.container, won, healthLeft);
   }
 
   public enemyCreated(id: number, positionChanged: Observable<Vec2>) {

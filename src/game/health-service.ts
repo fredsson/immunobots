@@ -7,6 +7,10 @@ export class HealthService {
 
   public healthChanged = this.eventPublisher.define<number>('healthChanged');
 
+  public get currentHealth() {
+    return this.health;
+  }
+
   constructor(totalNoOfEnemies: number) {
     this.healthDecreasePerEnemy = totalNoOfEnemies / 1000;
 

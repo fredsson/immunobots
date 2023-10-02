@@ -1,8 +1,8 @@
 import { GameView } from "./renderer";
 
 export class EndMenuView implements GameView {
-  public static create(container: HTMLElement, won: boolean): EndMenuView {
-    const view = new EndMenuView(container, won);
+  public static create(container: HTMLElement, won: boolean, healthLeft: number): EndMenuView {
+    const view = new EndMenuView(container, won, healthLeft);
     view.init();
 
     return view;
@@ -11,11 +11,11 @@ export class EndMenuView implements GameView {
   private endTextElement: HTMLElement;
   private restartTextElement: HTMLElement;
 
-  private constructor(private container: HTMLElement, won: boolean) {
+  private constructor(private container: HTMLElement, won: boolean, healthLeft: number) {
     this.endTextElement = document.createElement('div');
     this.endTextElement.className = 'menu-text-container';
 
-    const endText = won ? `Congratulations, you eliminated all the invaders!` : `The patient died before you could eliminate all threats!`;
+    const endText = won ? `Congratulations, you eliminated all the invaders with ${Math.round(healthLeft)} health left!` : `The patient died before you could eliminate all threats!`;
     this.endTextElement.innerText = endText;
 
     container.appendChild(this.endTextElement);
