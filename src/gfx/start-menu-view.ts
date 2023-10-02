@@ -9,6 +9,7 @@ export class StartMenuView implements GameView {
   }
 
   private textElement: HTMLElement;
+  private titleElement: HTMLImageElement;
 
   private constructor(private container: HTMLElement, ) {
     this.textElement = document.createElement('div');
@@ -16,6 +17,12 @@ export class StartMenuView implements GameView {
     this.textElement.innerText = 'Press Any Key to Start!';
 
     container.appendChild(this.textElement);
+
+    this.titleElement = document.createElement('img');
+    this.titleElement.src = 'assets/gfx/title.png';
+    this.titleElement.className = 'menu-image';
+
+    container.appendChild(this.titleElement);
   }
 
   init(): void {
@@ -23,5 +30,6 @@ export class StartMenuView implements GameView {
 
   destroy(): void {
     this.container.removeChild(this.textElement);
+    this.container.removeChild(this.titleElement);
   }
 }
