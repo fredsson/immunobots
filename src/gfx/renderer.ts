@@ -11,6 +11,7 @@ import { Bullet } from "../game/bullet";
 import { HealthView } from "./health-view";
 import { StartMenuView } from "./start-menu-view";
 import { EndMenuView } from "./end-menu-view";
+import { TextureManager } from "./texture-manager";
 
 export interface GameView {
   init(): void;
@@ -19,6 +20,7 @@ export interface GameView {
 
 export class Renderer {
   private camera: Camera;
+  private textureManager = new TextureManager();
   private views: GameView[] = [];
 
   private enemyViews: Record<number, EnemyView> = {};
@@ -42,29 +44,32 @@ export class Renderer {
   }
 
   public init() {
-    this.startMenuView?.destroy();
-    this.startMenuView = undefined;
-    this.endMenuView?.destroy();
-    this.endMenuView = undefined;
+    this.textureManager.loadAll().then(() => {
+      this.startMenuView?.destroy();
+      this.startMenuView = undefined;
+      this.endMenuView?.destroy();
+      this.endMenuView = undefined;
 
-    this.application.stage.sortableChildren = true;
-    this.views.push(PlayerView.create(this.application.stage, this.camera, this.playerPositionChanged));
-    this.zoneLoaded.subscribe(zone => {
-      this.views.push(ZoneView.create(this.application.stage, this.camera, zone));
+      this.application.stage.sortableChildren = true;
+      this.views.push(PlayerView.create(this.application.stage, this.camera, this.playerPositionChanged));
+      this.zoneLoaded.subscribe(zone => {
+        this.views.push(ZoneView.create(this.application.stage, this.camera, zone));
+      });
+
+      this.views.push(HealthView.create(this.container, this.healthChanged));
+
+      this.subscriptions.push(this.bulletCreated.subscribe(bullet => {
+        this.bulletViews[bullet.id] = BulletView.create(this.application.stage, this.camera, this.textureManager, bullet);
+      }));
+
+      this.subscriptions.push(this.bulletRemoved.subscribe(bulletId => {
+        const view = this.bulletViews[bulletId];
+        view.destroy();
+
+        delete this.bulletViews[bulletId];
+      }));
     });
 
-    this.views.push(HealthView.create(this.container, this.healthChanged));
-
-    this.subscriptions.push(this.bulletCreated.subscribe(bullet => {
-      this.bulletViews[bullet.id] = BulletView.create(this.application.stage, this.camera, bullet);
-    }));
-
-    this.subscriptions.push(this.bulletRemoved.subscribe(bulletId => {
-      const view = this.bulletViews[bulletId];
-      view.destroy();
-
-      delete this.bulletViews[bulletId];
-    }));
   }
 
   public destroy() {
@@ -91,7 +96,7 @@ export class Renderer {
   }
 
   public enemyCreated(id: number, positionChanged: Observable<Vec2>) {
-    this.enemyViews[id] = EnemyView.create(this.application.stage, this.camera, positionChanged);
+    this.enemyViews[id] = EnemyView.create(this.application.stage, this.camera, this.textureManager, positionChanged);
   }
 
   public enemyKilled(id: number) {
