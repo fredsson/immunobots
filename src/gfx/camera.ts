@@ -23,8 +23,8 @@ export class CenteredCamera implements Camera {
 
   constructor(screen: Rectangle, target: Observable<Vec2>) {
     this.screenCenter = {
-      x: screen.width / 2,
-      y: screen.height / 2,
+      x: Math.round(screen.width / 2),
+      y: Math.round(screen.height / 2),
     };
 
     this.positionSubscription = target.subscribe((position) => {
