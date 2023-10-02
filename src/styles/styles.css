@@ -45,7 +45,7 @@ time, mark, audio, video {
 
 #enemies-alive-text {
 	position: absolute;
-	right: 8%;
+	left: 86%;
 	top: 130px;
 	color: black;
 	font-size: 40px;
@@ -57,7 +57,7 @@ time, mark, audio, video {
 #enemies-alive-icon {
 	background: no-repeat url('/assets/gfx/enemy_1.png') 0 0;
 	position: absolute;
-	right: 5%;
+	left: 87%;
 	top: 120px;
 	width: 64px;
 	height: 64px;
@@ -72,7 +72,7 @@ time, mark, audio, video {
 .menu-image {
 	position: absolute;
 	top: 0;
-	left: 20%;
+	left: 30%;
 	width: 1080px;
 	height: 500px;
 }
