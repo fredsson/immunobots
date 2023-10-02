@@ -48,7 +48,7 @@ class ZoneTile {
 export class Zone {
   public static async load(zoneName: string, collisionManager: CollisionManager): Promise<Zone> {
     return new Promise(resolve => {
-      fetch(`/assets/zones/${zoneName}.txt`)
+      fetch(`assets/zones/${zoneName}.txt`)
         .then(response => response.text())
         .then(data => {
 
