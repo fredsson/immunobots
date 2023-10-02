@@ -20,7 +20,6 @@ export class EndMenuView implements GameView {
 
     container.appendChild(this.endTextElement);
 
-
     this.restartTextElement = document.createElement('div');
     this.restartTextElement.className = 'menu-text-container menu-text-container--second';
     this.restartTextElement.innerText = 'Press Enter to play again!';

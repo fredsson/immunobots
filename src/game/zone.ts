@@ -1,5 +1,5 @@
 import { Vec2 } from "../utils/vec";
-import { CollisionManager } from "./collision-manager";
+import { CollisionManager, CollisionRect } from "./collision-manager";
 import { ZoneTileParser } from "./zone-tile-parser";
 
 export enum TileType {
@@ -13,6 +13,31 @@ export enum TileType {
   WallOpenLeftAndBelow = 'WallOpenLeftAndBelow',
   WallOpenRightAndAbove = 'WallOpenRightAndAbove',
   WallOpenRightAndBelow = 'WallOpenRightAndBelow',
+}
+
+function collisionRectFromTileType(tileType: TileType, position: Vec2): CollisionRect {
+  switch(tileType) {
+    case TileType.Open:
+      return {position, size: {x: 0, y: 0}};
+    case TileType.Wall:
+      return {position, size: {x: 128, y: 128}};
+    case TileType.WallOpenAbove:
+      return {position: {x: position.x , y: position.y + 10}, size: {x: 128, y: 118}};
+    case TileType.WallOpenBelow:
+      return {position: {x: position.x , y: position.y}, size: {x: 128, y: 118}};
+    case TileType.WallOpenLeft:
+      return {position: {x: position.x + 10 , y: position.y}, size: {x: 118, y: 128}};
+    case TileType.WallOpenRight:
+      return {position: {x: position.x , y: position.y}, size: {x: 118, y: 128}};
+    case TileType.WallOpenLeftAndAbove:
+      return {position: {x: position.x + 10, y: position.y + 10}, size: {x: 118, y: 118}};
+    case TileType.WallOpenLeftAndBelow:
+      return {position: {x: position.x + 10, y: position.y}, size: {x: 118, y: 118}};
+    case TileType.WallOpenRightAndAbove:
+      return {position: {x: position.x, y: position.y + 10}, size: {x: 118, y: 118}};
+    case TileType.WallOpenRightAndBelow:
+      return {position: {x: position.x, y: position.y}, size: {x: 118, y: 118}};
+  }
 }
 
 class ZoneTile {
@@ -58,10 +83,7 @@ export class Zone {
 
             const tileType = tileParser.tokenBasedOnNeighbors(v, {x, y});
             if (!ZoneTileParser.OpenTileTokens.includes(v)) {
-              collisionManager.addZoneTile({
-                position: {x: x*128, y: y*128},
-                size: {x: 128, y: 128},
-              });
+              collisionManager.addZoneTile(collisionRectFromTileType(tileType, {x: x*128, y: y*128}));
             }
 
             tiles.push(new ZoneTile(tileType));
