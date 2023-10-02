@@ -7,9 +7,6 @@ export class TextureManager {
 
   private loaded = false;
 
-  constructor() {
-  }
-
   public loadAll(): Promise<void> {
     if (this.loaded) {
       return Promise.resolve();
@@ -17,15 +14,21 @@ export class TextureManager {
 
     this.loaded = true;
     return new Promise(async resolve => {
-      await Assets.load('assets/gfx/bacteria.png').then(b => this.textureByAssetPath['assets/gfx/bacteria.png'] = b);
       await Assets.load('assets/gfx/bullet_1.json').then((b: { data: { animations: Record<string, string[]> } }) => {
         const animations = b.data.animations['default'].map(textureName => {
           return Texture.from(textureName);
         });
         this.animationsByAssetPath['assets/gfx/bullet_1.json'] = animations;
 
-        resolve();
       });
+      await Assets.load('assets/gfx/enemy_1.json').then((b: { data: { animations: Record<string, string[]> } }) => {
+        const animations = b.data.animations['default'].map(textureName => {
+          return Texture.from(textureName);
+        });
+        this.animationsByAssetPath['assets/gfx/enemy_1.json'] = animations;
+
+      });
+      resolve();
     })
   }
 

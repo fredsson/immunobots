@@ -1,4 +1,4 @@
-import { Container, DisplayObject, Sprite } from "pixi.js";
+import { AnimatedSprite, Container, DisplayObject, Sprite } from "pixi.js";
 import { GameView } from "./renderer";
 import { Camera } from "./camera";
 import { Observable, Subscription } from "../utils/event-publisher";
@@ -12,7 +12,7 @@ export class EnemyView implements GameView {
     return view;
   }
 
-  private sprite?: Sprite;
+  private sprite?: AnimatedSprite;
   private currentPosition?: Vec2;
 
   private cameraSub?: Subscription;
@@ -22,12 +22,14 @@ export class EnemyView implements GameView {
   }
 
   public init(): void {
-    const texture = this.textureManager.getByPath('assets/gfx/bacteria.png');
+    const textures = this.textureManager.getAnimationByPath('assets/gfx/enemy_1.json');
 
-    this.sprite = new Sprite(texture);
+    this.sprite = new AnimatedSprite(textures);
     this.sprite.zIndex = 2;
     this.sprite.anchor.x = 0.5;
     this.sprite.anchor.y = 0.5;
+    this.sprite.animationSpeed = 0.2;
+    this.sprite.play();
     this.stage.addChild(this.sprite);
     this.cameraSub = this.camera.positionChanged.subscribe(() => {
       if (this.currentPosition && this.sprite) {
