@@ -23,6 +23,8 @@ export class Player {
   public collision = this.eventPublisher.define<undefined>('collision');
 
   private activeMovement: {key: string, direction: Vec2}[] = [];
+  private lastActiveMovement = this.activeMovement;
+  private deAcceleration = PlayerSpeed;
 
   private currentMouseDirection: Vec2 = {x: 0, y: -1};
 
@@ -82,17 +84,16 @@ export class Player {
   public update(dt: number): void {
     this.bullets.forEach(b => b.update(dt));
 
-    const {x: dx, y: dy} = this.calculateMovement();
-    if (dx !== 0 || dy !== 0) {
-      const potentialPosition = {
-        x: Math.round(this.currentPosition.x + PlayerSpeed * dx * dt),
-        y: Math.round(this.currentPosition.y + PlayerSpeed * dy * dt),
-      };
+    const delta = this.calculateMovement(this.activeMovement);
+    if (delta.x !== 0 || delta.y !== 0) {
+      this.lastActiveMovement = this.activeMovement;
+      this.deAcceleration = PlayerSpeed;
 
-      if(!this.collisionFromCenter(potentialPosition)) {
-        this.currentPosition = potentialPosition;
-        this.eventPublisher.emit('positionChanged', this.currentPosition);
-      }
+      this.move(delta, PlayerSpeed, dt);
+    } else {
+      this.deAcceleration *= 0.97;
+      const lastActiveDelta = this.calculateMovement(this.lastActiveMovement);
+      this.move(lastActiveDelta, this.deAcceleration, dt);
     }
   }
 
@@ -111,10 +112,22 @@ export class Player {
     this.abortController.abort();
   }
 
-  private calculateMovement(): Vec2 {
-    return Vec2.normalize(this.activeMovement
+  private calculateMovement(movements: {key: string, direction: Vec2}[]): Vec2 {
+    return Vec2.normalize(movements
       .map(v => v.direction)
       .reduce((acc, value) => Vec2.add(acc, value), {x: 0, y: 0}));
+  }
+
+  private move(direction: Vec2, speed: number, dt: number) {
+    const potentialPosition = {
+      x: Math.round(this.currentPosition.x + speed * direction.x * dt),
+      y: Math.round(this.currentPosition.y + speed * direction.y * dt),
+    };
+
+    if(!this.collisionFromCenter(potentialPosition)) {
+      this.currentPosition = potentialPosition;
+      this.eventPublisher.emit('positionChanged', this.currentPosition);
+    }
   }
 
   private collisionFromCenter(potentialPosition: Vec2) {
