@@ -12,7 +12,7 @@ export class HealthService {
   }
 
   constructor(totalNoOfEnemies: number) {
-    this.healthDecreasePerEnemy = totalNoOfEnemies / 1000;
+    this.healthDecreasePerEnemy = totalNoOfEnemies / 1200;
 
     this.eventPublisher.emit('healthChanged', this.health);
   }
