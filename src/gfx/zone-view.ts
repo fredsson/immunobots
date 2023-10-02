@@ -74,7 +74,7 @@ export class ZoneView implements GameView {
   }
 
   public init(): void {
-    Assets.load('assets/gfx/tiles.json').then(b => {
+    Assets.load('/assets/gfx/tiles.json').then(b => {
       this.zone.tiles.forEach((t, index) => {
         const x = index % 100;
         const y = Math.floor(index / 100);

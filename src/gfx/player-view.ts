@@ -18,7 +18,7 @@ export class PlayerView implements GameView {
   }
 
   public init(): void {
-    Assets.load('assets/gfx/bot.png').then(b => {
+    Assets.load('/assets/gfx/bot.png').then(b => {
       this.sprite = new Sprite(b);
       this.sprite.zIndex = 2;
       this.sprite.anchor.x = 0.5;
