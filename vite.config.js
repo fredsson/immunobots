@@ -1,16 +1,23 @@
 /// <reference types="vitest" />
 import { defineConfig } from 'vite'
-import fs from 'fs/promises';
 
 export default defineConfig({
   server: {
     port: 4200
   },
-  plugins: [{
-    name: 'index-html-build-replacement',
-    apply: 'build',
-    async transformIndexHtml() {
-      return await fs.readFile('./index.prod.html', 'utf8');
+  build: {
+    rollupOptions: {
+      input: {
+        app: './index.prod.html'
+      },
     }
+  },
+  plugins: [{
+    name: 'renameIndex',
+    enforce: 'post',
+    generateBundle(options, bundle) {
+      const indexHtml = bundle['index.prod.html'];
+      indexHtml.fileName = 'index.html';
+    },
   }]
 })
