@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:prod": "vite build --base=/ld/54",
     "test": "vitest"
   },
   "author": "Fredrik Andersson",
