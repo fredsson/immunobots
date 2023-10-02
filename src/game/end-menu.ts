@@ -7,12 +7,10 @@ export class EndMenu {
   public anyButtonClicked = this.eventPublisher.define('buttonClicked');
 
   constructor() {
-    window.addEventListener('keyup', () => {
-      this.eventPublisher.emit('buttonClicked', undefined);
-    }, {signal: this.abortController.signal});
-
-    window.addEventListener('mouseup', () => {
-      this.eventPublisher.emit('buttonClicked', undefined);
+    window.addEventListener('keyup', event => {
+      if (event.key === 'Enter') {
+        this.eventPublisher.emit('buttonClicked', undefined);
+      }
     }, {signal: this.abortController.signal});
   }
 

@@ -9,6 +9,7 @@ export class EndMenuView implements GameView {
   }
 
   private endTextElement: HTMLElement;
+  private restartTextElement: HTMLElement;
 
   private constructor(private container: HTMLElement, won: boolean) {
     this.endTextElement = document.createElement('div');
@@ -18,11 +19,18 @@ export class EndMenuView implements GameView {
     this.endTextElement.innerText = endText;
 
     container.appendChild(this.endTextElement);
+
+
+    this.restartTextElement = document.createElement('div');
+    this.restartTextElement.className = 'menu-text-container menu-text-container--second';
+    this.restartTextElement.innerText = 'Press Enter to play again!';
+    container.appendChild(this.restartTextElement);
   }
 
   init(): void {
   }
   destroy(): void {
     this.container.removeChild(this.endTextElement);
+    this.container.removeChild(this.restartTextElement);
   }
 }
