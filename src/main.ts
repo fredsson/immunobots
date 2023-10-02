@@ -27,7 +27,9 @@ window.addEventListener('DOMContentLoaded', () => {
     game.zoneLoaded,
     game.bulletCreated,
     game.bulletRemoved,
-    game.healthChanged
+    game.healthChanged,
+    game.enemyCreated,
+    game.enemyKilled
   );
 
   let startMenu = new StartMenu();
@@ -48,14 +50,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
     subscriptions.push(game.enemyKilled.subscribe(() => {
       audioService.playEnemyDeathSound();
-    }));
-
-    subscriptions.push(game.enemyCreated.subscribe(enemy => {
-      renderer.enemyCreated(enemy.id, enemy.positionChanged);
-    }));
-
-    subscriptions.push(game.enemyKilled.subscribe(id => {
-      renderer.enemyKilled(id);
     }));
 
     const ticker = app.ticker.add((dt) => game.update(dt));

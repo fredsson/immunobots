@@ -1,4 +1,4 @@
-import { AnimatedSprite, Container, DisplayObject, Sprite } from "pixi.js";
+import { AnimatedSprite, Container, DisplayObject } from "pixi.js";
 import { GameView } from "./renderer";
 import { Camera } from "./camera";
 import { Observable, Subscription } from "../utils/event-publisher";

@@ -12,6 +12,7 @@ import { HealthView } from "./health-view";
 import { StartMenuView } from "./start-menu-view";
 import { EndMenuView } from "./end-menu-view";
 import { TextureManager } from "./texture-manager";
+import { Enemy } from "../game/enemy";
 
 export interface GameView {
   init(): void;
@@ -38,7 +39,9 @@ export class Renderer {
     private zoneLoaded: Observable<Zone>,
     private bulletCreated: Observable<Bullet>,
     private bulletRemoved: Observable<number>,
-    private healthChanged: Observable<number>
+    private healthChanged: Observable<number>,
+    private enemyCreated: Observable<Enemy>,
+    private enemyKilled: Observable<number>
   ) {
     this.camera = new CenteredCamera(this.application.screen, this.playerPositionChanged);
   }
@@ -56,7 +59,7 @@ export class Renderer {
         this.views.push(ZoneView.create(this.application.stage, this.camera, zone));
       });
 
-      this.views.push(HealthView.create(this.container, this.healthChanged));
+      this.views.push(HealthView.create(this.container, this.healthChanged, this.enemyCreated, this.enemyKilled));
 
       this.subscriptions.push(this.bulletCreated.subscribe(bullet => {
         this.bulletViews[bullet.id] = BulletView.create(this.application.stage, this.camera, this.textureManager, bullet);
@@ -67,6 +70,16 @@ export class Renderer {
         view.destroy();
 
         delete this.bulletViews[bulletId];
+      }));
+
+      this.subscriptions.push(this.enemyCreated.subscribe(enemy => {
+        this.enemyViews[enemy.id] = EnemyView.create(this.application.stage, this.camera, this.textureManager, enemy.positionChanged);
+      }));
+
+      this.subscriptions.push(this.enemyKilled.subscribe(id => {
+        const view = this.enemyViews[id];
+        delete this.enemyViews[id];
+        view.destroy();
       }));
     });
 
@@ -93,16 +106,5 @@ export class Renderer {
 
   public showEndMenu(won: boolean, healthLeft: number) {
     this.endMenuView = EndMenuView.create(this.container, won, healthLeft);
-  }
-
-  public enemyCreated(id: number, positionChanged: Observable<Vec2>) {
-    this.enemyViews[id] = EnemyView.create(this.application.stage, this.camera, this.textureManager, positionChanged);
-  }
-
-  public enemyKilled(id: number) {
-    const view = this.enemyViews[id];
-    delete this.enemyViews[id];
-
-    view.destroy();
   }
 }

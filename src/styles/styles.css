@@ -43,6 +43,26 @@ time, mark, audio, video {
 	background-color: green;
 }
 
+#enemies-alive-text {
+	position: absolute;
+	right: 8%;
+	top: 130px;
+	color: black;
+	font-size: 40px;
+	font-weight: 500;
+	width:auto;
+	height: auto;
+}
+
+#enemies-alive-icon {
+	background: no-repeat url('/assets/gfx/enemy_1.png') 0 0;
+	position: absolute;
+	right: 5%;
+	top: 120px;
+	width: 64px;
+	height: 64px;
+}
+
 .menu-text-container {
 	position: absolute;
 	text-align: center;
